@@ -1,8 +1,8 @@
 ﻿namespace VBAClassGenerator
 {
-    enum VBADataType
+    internal enum VBADataType
     {
-        Boolen,
+        Boolean,
         Byte,
         Collection,
         Currency,

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Text;
 
 namespace VBAClassGenerator
 {
-    class VBAClassBuilder
+    internal class VBAClassBuilder
     {
         public string WholeClass { get; set; }
         public List<VBAClassProperty> Properties { get; set; } = new List<VBAClassProperty>();
         private const string OPTION = "Option Explicit";
 
-        public void AddProperty(VBAClassProperty prop)
+        public VBAClassBuilder AddProperty(VBAClassProperty prop)
         {
             if (!Properties.Contains(prop))
             {
@@ -22,6 +20,8 @@ namespace VBAClassGenerator
             {
                 Console.WriteLine($"Class already contains property {prop}");
             }
+
+            return this;
         }
 
         public string PrepareClass()
@@ -42,6 +42,8 @@ namespace VBAClassGenerator
                 builder.Append(PrepareGetProperty(prop));
                 builder.Append(PrepareLetProperty(prop));
             }
+
+            builder.Append(PrepareToStringMethod());
 
             return builder.ToString();
         }
@@ -94,6 +96,48 @@ namespace VBAClassGenerator
                 .Append(Environment.NewLine);
             builder
                 .Append(Environment.NewLine);
+
+            return builder.ToString();
+        }
+
+        private string PrepareToStringMethod()
+        {
+            var builder = new StringBuilder();
+
+            builder
+                .Append("Public Function ToString() As String")
+                .Append(Environment.NewLine);
+
+            builder
+                .Append("\t")
+                .Append("ToString = ");
+
+            for (int i = 0; i < Properties.Count; i++)
+            {
+                if (i > 0)
+                {
+                    builder.Append("\t");
+                }
+                var propName = Properties[i].Name[0].ToString().ToUpper() + Properties[i].Name.Substring(1);
+                builder
+                    .Append("\"")
+                    .Append(propName)
+                    .Append(" = \" & ")
+                    .Append(Properties[i].PrivateMemberName);
+
+                if (i != Properties.Count - 1)
+                {
+                    builder.Append(" & vbNewLine & _");
+                }
+                else
+                {
+                    builder.Append(" & vbNewLine");
+                }
+                builder.Append(Environment.NewLine);
+            }
+
+            builder.Append("End Function");
+            builder.Append(Environment.NewLine);
 
             return builder.ToString();
         }

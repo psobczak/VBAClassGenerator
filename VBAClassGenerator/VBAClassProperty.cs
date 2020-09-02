@@ -1,8 +1,9 @@
 ﻿namespace VBAClassGenerator
 {
-    class VBAClassProperty
+    internal class VBAClassProperty
     {
         public string Name { get; set; }
+
         public string PrivateMemberName
         {
             get => $"m_{Name}";
@@ -21,5 +22,4 @@
             DataType = dataType;
         }
     }
-
 }
